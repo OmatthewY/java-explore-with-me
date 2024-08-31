@@ -22,6 +22,8 @@ import java.util.Map;
 public class StatClient {
     private final RestClient restClient;
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @Autowired
     public StatClient(@Value("${client.url}") String startUrl) {
         restClient = RestClient.builder()
@@ -55,8 +57,7 @@ public class StatClient {
     }
 
     private String encodeDate(LocalDateTime date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formatted = date.format(formatter);
+        String formatted = date.format(DATE_TIME_FORMATTER);
         return URLEncoder.encode(formatted, StandardCharsets.UTF_8);
     }
 }
