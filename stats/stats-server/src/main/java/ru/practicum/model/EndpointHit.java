@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 @Entity
-@Table(name = "endpointhit")
+@Table(name = "endpoint_hit")
 public class EndpointHit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "endpointhit_id")
+    @Column(name = "endpoint_hit_id")
     private Long id;
     @Column(name = "app")
     private String app;
