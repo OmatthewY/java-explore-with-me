@@ -38,11 +38,14 @@ public class NewEventDto {
     @NotNull(message = "Местоположение не может быть пустым")
     private Location location;
 
+    @Builder.Default
     private boolean paid = false;
 
+    @Builder.Default
     @PositiveOrZero(message = "Лимит участников должен быть больше или равен нулю")
     private Integer participantLimit = 0;
 
+    @Builder.Default
     private Boolean requestModeration = true;
 
     @NotBlank(message = "Заголовок не может быть пустым")

@@ -117,8 +117,11 @@ public class EventServiceImpl implements EventService {
         Integer requests = requestRepository.countConfirmedRequest(eventId);
 
         long eventViews = getEventViews(event);
+
+        long updatedEventViews = eventViews + 1;
+
         event.setConfirmedRequests(requests);
-        return eventMapper.toEventFullDto(event, eventViews);
+        return eventMapper.toEventFullDto(event, updatedEventViews);
     }
 
     private long getEventViews(Event event) {

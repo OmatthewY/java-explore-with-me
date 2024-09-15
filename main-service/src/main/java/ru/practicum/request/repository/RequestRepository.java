@@ -31,7 +31,6 @@ public interface RequestRepository extends JpaRepository<Request, Long>, Queryds
             "GROUP BY e.id")
     List<EventCountByRequest> findConfirmedRequestWithoutLimitCheck(List<Event> events);
 
-
     @Query(value = "SELECT (COUNT(r.id)>=?2) " +
             "FROM Request r " +
             "WHERE r.event.id = ?1 AND r.status= 'CONFIRMED'")

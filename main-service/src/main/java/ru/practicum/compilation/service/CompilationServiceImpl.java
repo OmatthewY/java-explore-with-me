@@ -73,7 +73,7 @@ public class CompilationServiceImpl implements CompilationService {
 
             long views = viewStatsDTOS.stream().filter(stat -> stat.getUri().equals("/events/" + ev.getEventId())).map(ViewStatsDTO::getHits).findFirst().orElse(0L);
             finalEvent.setConfirmedRequests(Math.toIntExact(ev.getCount()));
-            return eventMapper.toEventShortDto(finalEvent,views);
+            return eventMapper.toEventShortDto(finalEvent, views);
         }).toList();
     }
 

@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public interface EventMapper {
 
     @Mapping(target = "views", source = "views")
-    EventFullDto toEventFullDto(final Event event,final long views);
+    EventFullDto toEventFullDto(final Event event, final long views);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)
@@ -33,5 +33,5 @@ public interface EventMapper {
                   final User initiator, final EventState state, LocalDateTime createdOn);
 
     @Mapping(target = "views", source = "views")
-    EventShortDto toEventShortDto(final Event event,final long views);
+    EventShortDto toEventShortDto(final Event event, final long views);
 }

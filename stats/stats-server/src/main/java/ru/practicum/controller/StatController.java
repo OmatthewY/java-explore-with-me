@@ -1,8 +1,8 @@
 package ru.practicum.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exeption.WrongDateException;
@@ -11,7 +11,10 @@ import ru.practicum.stat.EndpointHitDTO;
 import ru.practicum.stat.StatsParams;
 import ru.practicum.stat.ViewStatsDTO;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -19,6 +22,8 @@ import java.util.List;
 public class StatController {
 
     private final StatService statService;
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
@@ -29,15 +34,19 @@ public class StatController {
     @GetMapping("/stats")
     @ResponseStatus(HttpStatus.OK)
     public List<ViewStatsDTO> getStats(
-            @RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-            @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+            @NotNull @RequestParam("start") String start,
+            @NotNull @RequestParam("end") String end,
             @RequestParam(value = "uris", defaultValue = "") List<String> uris,
             @RequestParam(value = "unique", defaultValue = "false") Boolean unique) {
-        validDate(start, end);
+        String decodedStartDate = URLDecoder.decode(start, StandardCharsets.UTF_8);
+        String decodedEndDate = URLDecoder.decode(end, StandardCharsets.UTF_8);
+        LocalDateTime startDecode = LocalDateTime.parse(decodedStartDate, DATE_TIME_FORMATTER);
+        LocalDateTime endDecode = LocalDateTime.parse(decodedEndDate, DATE_TIME_FORMATTER);
+        validDate(startDecode, endDecode);
 
         StatsParams statsParams = StatsParams.builder()
-                .start(start)
-                .end(end)
+                .start(startDecode)
+                .end(endDecode)
                 .unique(unique)
                 .uris(uris)
                 .build();

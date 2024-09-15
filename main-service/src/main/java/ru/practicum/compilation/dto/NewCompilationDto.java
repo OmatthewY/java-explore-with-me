@@ -16,6 +16,7 @@ import java.util.List;
 public class NewCompilationDto {
     private List<Long> events;
 
+    @Builder.Default
     private boolean pinned = false;
 
     @NotBlank(message = "Заголовок не может быть пустым")

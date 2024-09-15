@@ -32,6 +32,7 @@ public class Event {
 
     @Column(name = "confirmed_requests")
     @Transient
+    @Builder.Default
     private Integer confirmedRequests = 0;
 
     @Column(name = "created_on")
