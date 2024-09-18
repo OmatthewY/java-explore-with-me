@@ -10,6 +10,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
+import ru.practicum.location.dto.LocationDto;
 import ru.practicum.location.model.Location;
 import ru.practicum.user.model.User;
 
@@ -34,4 +35,7 @@ public interface EventMapper {
 
     @Mapping(target = "views", source = "views")
     EventShortDto toEventShortDto(final Event event, final long views);
+
+    @Mapping(target = "id", ignore = true)
+    Location toLocation(LocationDto locationDto);
 }

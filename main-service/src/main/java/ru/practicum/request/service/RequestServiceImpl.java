@@ -111,7 +111,7 @@ public class RequestServiceImpl implements RequestService {
     public EventRequestStatusUpdateResult updateStatus(RequestParamsUpdate params) {
         User user = getUser(params.getUserId());
         Event event = getUserEvent(params.getEventId(), user);
-        List<Long> requestIds = params.getDto().getRequestIds();
+        List<Long> requestIds = new ArrayList<>(params.getDto().getRequestIds());
         List<ParticipationRequestDto> updatedRequests = new ArrayList<>();
         if (params.getDto().getStatus().equals(RequestStatus.REJECTED)) {
             for (Long requestId : requestIds) {

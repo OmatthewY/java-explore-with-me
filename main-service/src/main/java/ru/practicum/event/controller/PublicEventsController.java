@@ -1,9 +1,11 @@
 package ru.practicum.event.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.StatClient;
 import ru.practicum.event.dto.EventFullDto;
@@ -16,7 +18,9 @@ import ru.practicum.exeption.WrongDateException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/events")
@@ -26,9 +30,8 @@ public class PublicEventsController {
     private final StatClient statClient;
 
     @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getEventsPublic(@RequestParam(value = "text", required = false) String text,
-                                               @RequestParam(value = "categories", required = false) List<Long> categories,
+                                               @RequestParam(value = "categories", required = false) Set<Long> categories,
                                                @RequestParam(value = "paid", required = false) Boolean paid,
                                                @RequestParam(value = "rangeStart", required = false)
                                                @DateTimeFormat(pattern = ("yyyy-MM-dd HH:mm:ss")) LocalDateTime rangeStart,
@@ -36,8 +39,8 @@ public class PublicEventsController {
                                                @DateTimeFormat(pattern = ("yyyy-MM-dd HH:mm:ss")) LocalDateTime rangeEnd,
                                                @RequestParam(value = "onlyAvailable", defaultValue = "false") Boolean onlyAvailable,
                                                @RequestParam(value = "sort", required = false) Sort sort,
-                                               @RequestParam(value = "from", defaultValue = "0") int from,
-                                               @RequestParam(value = "size", defaultValue = "10") int size,
+                                               @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
+                                               @RequestParam(value = "size", defaultValue = "10") @Positive int size,
                                                HttpServletRequest request) {
 
         Map<String, LocalDateTime> ranges = validDate(rangeStart, rangeEnd);
@@ -58,7 +61,6 @@ public class PublicEventsController {
     }
 
     @GetMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEvent(@PathVariable("eventId") long eventId, HttpServletRequest request) {
         EventFullDto event = eventService.getById(eventId);
         sendStats(request);

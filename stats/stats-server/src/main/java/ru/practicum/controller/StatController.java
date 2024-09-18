@@ -1,7 +1,6 @@
 package ru.practicum.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +31,9 @@ public class StatController {
     }
 
     @GetMapping("/stats")
-    @ResponseStatus(HttpStatus.OK)
     public List<ViewStatsDTO> getStats(
-            @NotNull @RequestParam("start") String start,
-            @NotNull @RequestParam("end") String end,
+            @RequestParam("start") String start,
+            @RequestParam("end") String end,
             @RequestParam(value = "uris", defaultValue = "") List<String> uris,
             @RequestParam(value = "unique", defaultValue = "false") Boolean unique) {
         String decodedStartDate = URLDecoder.decode(start, StandardCharsets.UTF_8);

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PrivateEventParams {
-    long userId;
-    int from;
-    int size;
+    private long userId;
+    private int from;
+    private int size;
 }

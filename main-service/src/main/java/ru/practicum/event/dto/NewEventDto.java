@@ -1,6 +1,7 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -10,7 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.exeption.ValidEventDate;
-import ru.practicum.location.model.Location;
+import ru.practicum.location.dto.LocationDto;
 
 import java.time.LocalDateTime;
 
@@ -35,18 +36,18 @@ public class NewEventDto {
     @ValidEventDate
     private LocalDateTime eventDate;
 
-    @NotNull(message = "Местоположение не может быть пустым")
-    private Location location;
+    @Valid
+    private LocationDto location;
 
     @Builder.Default
     private boolean paid = false;
 
     @Builder.Default
     @PositiveOrZero(message = "Лимит участников должен быть больше или равен нулю")
-    private Integer participantLimit = 0;
+    private int participantLimit = 0;
 
     @Builder.Default
-    private Boolean requestModeration = true;
+    private boolean requestModeration = true;
 
     @NotBlank(message = "Заголовок не может быть пустым")
     @Size(min = 3, max = 120, message = "Длина заголовка должна составлять не менее 3 и не более 120 символов")

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.event.model.Event;
 
-import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "compilations")
@@ -33,5 +33,5 @@ public class Compilation {
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
     @ToString.Exclude
-    private Collection<Event> events;
+    private Set<Event> events;
 }

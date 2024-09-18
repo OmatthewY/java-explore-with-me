@@ -20,7 +20,6 @@ public class PrivateRequestController {
     private final RequestService requestService;
 
     @GetMapping("/requests")
-    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getAll(@PathVariable("userId") long userId) {
         return requestService.getAll(userId);
     }
@@ -33,21 +32,18 @@ public class PrivateRequestController {
     }
 
     @PatchMapping("/requests/{requestId}/cancel")
-    @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancel(@PathVariable("userId") long userId,
                                           @PathVariable("requestId") long requestId) {
         return requestService.cancel(userId, requestId);
     }
 
     @GetMapping("/events/{eventId}/requests")
-    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsOnUserEvent(@PathVariable("userId") long userId,
                                                                 @PathVariable("eventId") long eventId) {
         return requestService.findRequestsOnUserEvent(userId, eventId);
     }
 
     @PatchMapping("/events/{eventId}/requests")
-    @ResponseStatus(HttpStatus.OK)
     public EventRequestStatusUpdateResult updateStatusRequestByUserAndEventId(@PathVariable("userId") long userId,
                                                                               @PathVariable("eventId") long eventId,
                                                                               @RequestBody EventRequestStatusUpdateRequest updateDto) {

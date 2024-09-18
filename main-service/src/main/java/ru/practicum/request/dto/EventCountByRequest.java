@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class EventCountByRequest {
-    Long eventId;
-    Long count;
+    private Long eventId;
+    private Long count;
 }

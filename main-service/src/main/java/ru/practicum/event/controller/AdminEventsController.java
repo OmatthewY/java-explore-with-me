@@ -2,6 +2,7 @@ package ru.practicum.event.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import ru.practicum.exeption.WrongDateException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Validated
 @RequiredArgsConstructor
@@ -25,15 +27,15 @@ public class AdminEventsController {
     private final EventService eventService;
 
     @GetMapping("/events")
-    public List<EventFullDto> getEvents(@RequestParam(value = "users", required = false) List<Long> users,
-                                        @RequestParam(value = "states", required = false) List<EventState> states,
-                                        @RequestParam(value = "categories", required = false) List<Long> categories,
+    public List<EventFullDto> getEvents(@RequestParam(value = "users", required = false) Set<Long> users,
+                                        @RequestParam(value = "states", required = false) Set<EventState> states,
+                                        @RequestParam(value = "categories", required = false) Set<Long> categories,
                                         @RequestParam(value = "rangeStart", required = false)
                                         @DateTimeFormat(pattern = ("yyyy-MM-dd HH:mm:ss")) LocalDateTime rangeStart,
                                         @RequestParam(value = "rangeEnd", required = false)
                                         @DateTimeFormat(pattern = ("yyyy-MM-dd HH:mm:ss")) LocalDateTime rangeEnd,
-                                        @RequestParam(value = "from", defaultValue = "0") int from,
-                                        @RequestParam(value = "size", defaultValue = "10") int size) {
+                                        @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
+                                        @RequestParam(value = "size", defaultValue = "10") @Positive int size) {
 
         Map<String, LocalDateTime> ranges = validDate(rangeStart, rangeEnd);
         AdminEventRequestParams params = AdminEventRequestParams.builder()
@@ -51,14 +53,14 @@ public class AdminEventsController {
     @PatchMapping("/events/{eventId}")
     public EventFullDto updateEvent(@Positive @PathVariable long eventId,
                                     @Valid @RequestBody UpdateEventAdminRequest dto) {
-
         return eventService.update(eventId, dto);
     }
 
     private Map<String, LocalDateTime> validDate(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
         if (rangeEnd != null && rangeStart != null && rangeEnd.isBefore(rangeStart)) {
-            throw new WrongDateException("Дата окончания диапазона дложна быть после даты начала");
+            throw new WrongDateException("Дата окончания диапазона должна быть после даты начала");
         }
+
         LocalDateTime effectiveRangeStart = rangeStart != null ? rangeStart : LocalDateTime.now();
         LocalDateTime effectiveRangeEnd = rangeEnd != null ? rangeEnd : effectiveRangeStart.plusYears(200);
 

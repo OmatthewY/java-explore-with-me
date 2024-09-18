@@ -1,6 +1,8 @@
 package ru.practicum.event.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -18,10 +20,9 @@ public class PrivateEventsController {
     private final EventService eventService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getAll(@PathVariable("userId") long userId,
-                                      @RequestParam(value = "from", defaultValue = "0") int from,
-                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+                                      @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
+                                      @RequestParam(value = "size", defaultValue = "10") @Positive int size) {
 
         return eventService.getAll(new PrivateEventParams(userId, from, size));
     }
@@ -34,14 +35,12 @@ public class PrivateEventsController {
     }
 
     @GetMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getById(@PathVariable("userId") long userId,
                                 @PathVariable("eventId") long eventId) {
         return eventService.getById(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto update(@PathVariable("userId") long userId,
                                @PathVariable("eventId") long eventId,
                                @Valid @RequestBody UpdateEventUserRequest updateEventUserRequest) {

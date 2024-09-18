@@ -25,9 +25,7 @@ import ru.practicum.stat.StatsParams;
 import ru.practicum.stat.ViewStatsDTO;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -46,9 +44,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto create(NewCompilationDto newCompilationDto) {
-        Collection<Event> events = new ArrayList<>();
+        Set<Event> events = new HashSet<>();
         if (newCompilationDto.getEvents() != null) {
-            events = eventRepository.findByIdIn(newCompilationDto.getEvents());
+            events = new HashSet<>(eventRepository.findByIdIn(new ArrayList<>(newCompilationDto.getEvents())));
         }
         Compilation compilation = compilationMapper.toCompilation(newCompilationDto, events);
         Compilation saved = compilationRepository.save(compilation);
@@ -57,10 +55,9 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private List<EventShortDto> getEventShortDtos(Compilation saved) {
-        List<Event> compEvents = (List<Event>) saved.getEvents();
+        List<Event> compEvents = new ArrayList<>(saved.getEvents());
 
         List<EventCountByRequest> eventsIdWithViews = requestRepository.findConfirmedRequestWithoutLimitCheck(compEvents);
-
 
         List<String> uris = eventsIdWithViews.stream().map(ev -> "/events/" + ev.getEventId()).toList();
 
@@ -91,7 +88,8 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto update(long compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() -> new NotFoundException("Подборка с ID = " + compId + " не найдена"));
         if (updateCompilationRequest.getEvents() != null) {
-            compilation.setEvents(eventRepository.findByIdIn(updateCompilationRequest.getEvents()));
+            Set<Long> eventIds = new HashSet<>(updateCompilationRequest.getEvents());
+            compilation.setEvents(new HashSet<>(eventRepository.findByIdIn(new ArrayList<>(eventIds))));
         }
         if (updateCompilationRequest.getTitle() != null) {
             compilation.setTitle(updateCompilationRequest.getTitle());

@@ -1,13 +1,14 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.model.EventState;
-import ru.practicum.location.model.Location;
+import ru.practicum.location.dto.LocationDto;
 import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,10 @@ public class EventFullDto {
     private LocalDateTime eventDate;
 
     private UserShortDto initiator;
-    private Location location;
+
+    @Valid
+    private LocationDto location;
+
     private boolean paid;
     private int participantLimit;
     private LocalDateTime publishedOn;

@@ -7,16 +7,16 @@ import lombok.NoArgsConstructor;
 import ru.practicum.event.model.EventState;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class AdminEventRequestParams {
-    private List<Long> users;
-    private List<EventState> states;
-    private List<Long> categories;
+    private Set<Long> users;
+    private Set<EventState> states;
+    private Set<Long> categories;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
     private int from;
