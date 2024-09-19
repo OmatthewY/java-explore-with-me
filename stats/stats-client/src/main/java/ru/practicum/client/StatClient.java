@@ -28,6 +28,9 @@ public class StatClient {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @Value("${client.app.name}")
+    private String appName;
+
     @Autowired
     public StatClient(@Value("${client.url}") String startUrl) {
         this.startUrl = startUrl;
@@ -42,7 +45,7 @@ public class StatClient {
             String ip = request.getRemoteAddr();
             String uri = request.getRequestURI();
             EndpointHitDTO dto = EndpointHitDTO.builder()
-                    .app("ewm-main-service")
+                    .app(appName)
                     .ip(ip)
                     .uri(uri)
                     .timestamp(LocalDateTime.now())

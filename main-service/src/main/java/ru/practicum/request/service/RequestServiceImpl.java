@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -111,26 +112,37 @@ public class RequestServiceImpl implements RequestService {
     public EventRequestStatusUpdateResult updateStatus(RequestParamsUpdate params) {
         User user = getUser(params.getUserId());
         Event event = getUserEvent(params.getEventId(), user);
+
         List<Long> requestIds = new ArrayList<>(params.getDto().getRequestIds());
+
+        List<Request> requests = requestRepository.findAllById(requestIds);
+
+        Map<Long, Request> requestMap = requests.stream()
+                .collect(Collectors.toMap(Request::getId, request -> request));
+
         List<ParticipationRequestDto> updatedRequests = new ArrayList<>();
+        List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
+
         if (params.getDto().getStatus().equals(RequestStatus.REJECTED)) {
             for (Long requestId : requestIds) {
-                Request request = getRequest(requestId);
-                if (request.getStatus().equals(RequestStatus.PENDING)) {
+                Request request = requestMap.get(requestId);
+                if (request != null && request.getStatus().equals(RequestStatus.PENDING)) {
                     request.setStatus(RequestStatus.REJECTED);
+                    updatedRequests.add(requestMapper.toParticipationRequestDto(requestRepository.save(request)));
+                    rejectedRequests.add(requestMapper.toParticipationRequestDto(request));
                 } else {
-                    throw new ConflictException("Запрос со статусом " + request.getStatus() + " еще не был отклонен");
+                    throw new ConflictException("Запрос со статусом " + (request != null ? request.getStatus() : "UNKNOWN") + " еще не был отклонен");
                 }
-                ParticipationRequestDto participationRequestDto = requestMapper.toParticipationRequestDto(requestRepository.save(request));
-                updatedRequests.add(participationRequestDto);
             }
-            return new EventRequestStatusUpdateResult(Collections.emptyList(), updatedRequests);
+            return new EventRequestStatusUpdateResult(Collections.emptyList(), rejectedRequests);
         } else {
+            checkEventRequestLimit(event);
             for (Long requestId : requestIds) {
-                Request request = getRequest(requestId);
-                checkEventRequestLimit(event);
-                request.setStatus(RequestStatus.CONFIRMED);
-                updatedRequests.add(requestMapper.toParticipationRequestDto(requestRepository.save(request)));
+                Request request = requestMap.get(requestId);
+                if (request != null && request.getStatus().equals(RequestStatus.PENDING)) {
+                    request.setStatus(RequestStatus.CONFIRMED);
+                    updatedRequests.add(requestMapper.toParticipationRequestDto(requestRepository.save(request)));
+                }
             }
             return new EventRequestStatusUpdateResult(updatedRequests, Collections.emptyList());
         }

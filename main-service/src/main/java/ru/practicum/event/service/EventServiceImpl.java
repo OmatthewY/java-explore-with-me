@@ -91,16 +91,6 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    private static long getViews(EventCountByRequest ev, List<ViewStatsDTO> viewStatsDTOS, Event finalEvent) {
-        long views = viewStatsDTOS.stream()
-                .filter(stat -> stat.getUri().equals("/events/" + ev.getEventId()))
-                .map(ViewStatsDTO::getHits)
-                .findFirst()
-                .orElse(0L);
-        finalEvent.setConfirmedRequests(Math.toIntExact(ev.getCount()));
-        return views;
-    }
-
     private static Event getFinalEvent(EventCountByRequest ev, List<Event> events) {
         return events.stream()
                 .filter(e -> e.getId().equals(ev.getEventId()))
@@ -289,14 +279,14 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("Different with now less than 2 hours");
         }
 
-        if (updateEventUserRequest.getAnnotation() != null) {
+        if (updateEventUserRequest.getAnnotation() != null && !updateEventUserRequest.getAnnotation().isBlank()) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
         if (updateEventUserRequest.getCategory() != null) {
             Category category = getCategory(updateEventUserRequest.getCategory());
             event.setCategory(category);
         }
-        if (updateEventUserRequest.getDescription() != null) {
+        if (updateEventUserRequest.getDescription() != null && !updateEventUserRequest.getDescription().isBlank()) {
             event.setDescription(updateEventUserRequest.getDescription());
         }
         if (updateEventUserRequest.getEventDate() != null) {
@@ -315,7 +305,7 @@ public class EventServiceImpl implements EventService {
         if (updateEventUserRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateEventUserRequest.getRequestModeration());
         }
-        if (updateEventUserRequest.getTitle() != null) {
+        if (updateEventUserRequest.getTitle() != null && !updateEventUserRequest.getTitle().isBlank()) {
             event.setTitle(updateEventUserRequest.getTitle());
         }
         if (updateEventUserRequest.getStateAction() != null) {

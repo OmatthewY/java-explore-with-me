@@ -26,6 +26,7 @@ import ru.practicum.stat.ViewStatsDTO;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -37,7 +38,6 @@ public class CompilationServiceImpl implements CompilationService {
     private final RequestRepository requestRepository;
     private final StatClient statClient;
     private final EventMapper eventMapper;
-
 
     private final CompilationMapper compilationMapper;
 
@@ -57,21 +57,38 @@ public class CompilationServiceImpl implements CompilationService {
     private List<EventShortDto> getEventShortDtos(Compilation saved) {
         List<Event> compEvents = new ArrayList<>(saved.getEvents());
 
+        LocalDateTime earliestPublishedDate = compEvents.stream()
+                .map(Event::getPublishedOn)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(LocalDateTime.now().minusYears(100));
+
         List<EventCountByRequest> eventsIdWithViews = requestRepository.findConfirmedRequestWithoutLimitCheck(compEvents);
 
         List<String> uris = eventsIdWithViews.stream().map(ev -> "/events/" + ev.getEventId()).toList();
 
-        StatsParams statsParams = StatsParams.builder().uris(uris).unique(true).start(LocalDateTime.now().minusYears(100)).end(LocalDateTime.now()).build();
+        StatsParams statsParams = StatsParams.builder()
+                .uris(uris)
+                .unique(true)
+                .start(earliestPublishedDate)
+                .end(LocalDateTime.now())
+                .build();
 
         List<ViewStatsDTO> viewStatsDTOS = statClient.getStats(statsParams);
 
-        return eventsIdWithViews.stream().map(ev -> {
-            Event finalEvent = compEvents.stream().filter(e -> e.getId().equals(ev.getEventId())).findFirst().orElseThrow(() -> new IllegalStateException("Событие не найдено: " + ev.getEventId()));
+        Map<String, Long> viewsMap = viewStatsDTOS.stream()
+                .collect(Collectors.toMap(ViewStatsDTO::getUri, ViewStatsDTO::getHits));
 
-            long views = viewStatsDTOS.stream().filter(stat -> stat.getUri().equals("/events/" + ev.getEventId())).map(ViewStatsDTO::getHits).findFirst().orElse(0L);
+        Map<Long, Event> eventMap = compEvents.stream()
+                .collect(Collectors.toMap(Event::getId, event -> event));
+
+        return eventsIdWithViews.stream().map(ev -> {
+            Event finalEvent = eventMap.get(ev.getEventId());
+
+            long views = viewsMap.getOrDefault("/events/" + ev.getEventId(), 0L);
             finalEvent.setConfirmedRequests(Math.toIntExact(ev.getCount()));
             return eventMapper.toEventShortDto(finalEvent, views);
-        }).toList();
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -91,7 +108,7 @@ public class CompilationServiceImpl implements CompilationService {
             Set<Long> eventIds = new HashSet<>(updateCompilationRequest.getEvents());
             compilation.setEvents(new HashSet<>(eventRepository.findByIdIn(new ArrayList<>(eventIds))));
         }
-        if (updateCompilationRequest.getTitle() != null) {
+        if (updateCompilationRequest.getTitle() != null && !updateCompilationRequest.getTitle().isBlank()) {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
         if (updateCompilationRequest.getPinned() != null) {

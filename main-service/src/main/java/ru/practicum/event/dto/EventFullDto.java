@@ -1,7 +1,6 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +29,6 @@ public class EventFullDto {
 
     private UserShortDto initiator;
 
-    @Valid
     private LocationDto location;
 
     private boolean paid;

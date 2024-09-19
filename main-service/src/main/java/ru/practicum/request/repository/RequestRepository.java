@@ -16,6 +16,9 @@ public interface RequestRepository extends JpaRepository<Request, Long>, Queryds
 
     List<Request> findByRequester(User user);
 
+    @Query("SELECT r FROM Request r WHERE r.id IN ?1")
+    List<Request> findAllById(List<Long> requestIds);
+
     @Query(value = "SELECT new ru.practicum.request.dto.EventCountByRequest(e.id, COUNT(r.id)) " +
             "FROM Event e " +
             "LEFT JOIN Request r ON r.event.id = e.id AND r.status = 'CONFIRMED' " +

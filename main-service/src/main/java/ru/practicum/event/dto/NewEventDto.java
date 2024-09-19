@@ -1,7 +1,6 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -36,7 +35,7 @@ public class NewEventDto {
     @ValidEventDate
     private LocalDateTime eventDate;
 
-    @Valid
+    @NotNull(message = "Местоположение не может быть пустым")
     private LocationDto location;
 
     @Builder.Default
