@@ -33,7 +33,6 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
     List<ViewStatsDTO> findByUniqueIp(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                       @Param("uris") List<String> uris);
 
-
     @Query("SELECT new ru.practicum.stat.ViewStatsDTO(e.app, e.uri, COUNT(e.ip)) " +
             "FROM EndpointHit e " +
             "WHERE e.timestamp between :start AND :end AND e.uri IN :uris " +

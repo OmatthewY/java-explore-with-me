@@ -3,24 +3,30 @@ package ru.practicum.exeption;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class ApiError {
-    private HttpStatus status;
+    private String status;
+    private String reason;
     private String message;
-    private String debugMessage;
+    private List<String> errors;
+    private String timestamp;
 
-    public ApiError(HttpStatus status, String message) {
+
+    public ApiError(String status, String reason, String message, LocalDateTime timestamp) {
         this.status = status;
+        this.reason = reason;
         this.message = message;
+        this.timestamp = timestamp.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    public ApiError(HttpStatus status, String message, String debugMessage) {
-        this.status = status;
-        this.message = message;
-        this.debugMessage = debugMessage;
+    public ApiError(String status, String reason, String message, List<String> errors, LocalDateTime timestamp) {
+        this(status, reason, message, timestamp);
+        this.errors = errors;
     }
 }
