@@ -19,8 +19,9 @@ import java.time.LocalDateTime;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface EventMapper {
 
+    @Mapping(target = "rating", source = "rating")
     @Mapping(target = "views", source = "views")
-    EventFullDto toEventFullDto(final Event event, final long views);
+    EventFullDto toEventFullDto(final Event event, final long rating, final long views);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "publishedOn", ignore = true)
@@ -33,8 +34,9 @@ public interface EventMapper {
     Event toEvent(final NewEventDto newEventDto, final Category category, final Location location,
                   final User initiator, final EventState state, LocalDateTime createdOn);
 
+    @Mapping(target = "rating", source = "rating")
     @Mapping(target = "views", source = "views")
-    EventShortDto toEventShortDto(final Event event, final long views);
+    EventShortDto toEventShortDto(final Event event, final long rating, final long views);
 
     @Mapping(target = "id", ignore = true)
     Location toLocation(LocationDto locationDto);

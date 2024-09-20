@@ -2,7 +2,8 @@ package ru.practicum.event.model;
 
 public enum Sort {
     EVENT_DATE,
-    VIEWS;
+    VIEWS,
+    TOP_RATING;
 
     public static Sort from(String sortString) {
         for (Sort sort : Sort.values()) {
