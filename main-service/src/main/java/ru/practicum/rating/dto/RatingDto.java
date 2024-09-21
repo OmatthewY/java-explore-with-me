@@ -21,5 +21,5 @@ public class RatingDto {
 
     private Long userId;
     private EventShortDto event;
-    private Boolean isLike;
+    private Integer isLike;
 }

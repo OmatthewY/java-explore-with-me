@@ -52,7 +52,7 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Transactional
-    public void addRating(long userId, long eventId, boolean isLike) {
+    public void addRating(long userId, long eventId, int likeValue) {
         User user = getUser(userId);
         Event event = getEvent(eventId);
 
@@ -68,26 +68,25 @@ public class RatingServiceImpl implements RatingService {
 
         if (existingRating.isPresent()) {
             Rating rating = existingRating.get();
-            if (rating.getIsLike() == isLike) {
-                throw new ConflictException((isLike ? "Like" : "Dislike") + " already exists");
+            if (rating.getIsLike().equals(likeValue)) {
+                throw new ConflictException((likeValue == 1 ? "Like" : "Dislike") + " already exists");
             } else {
-                rating.setIsLike(isLike);
+                rating.setIsLike(likeValue);
                 ratingMapper.toDto(ratingRepository.save(rating));
             }
         } else {
-            // Если нет реакции, создаем новую
             Rating rating = Rating.builder()
                     .created(LocalDateTime.now())
                     .user(user)
                     .event(event)
-                    .isLike(isLike)
+                    .isLike(likeValue)
                     .build();
             ratingMapper.toDto(ratingRepository.save(rating));
         }
     }
 
     @Transactional
-    public void removeRating(long userId, long eventId, boolean isLike) {
+    public void removeRating(long userId, long eventId, int likeValue) {
         User user = getUser(userId);
         Event event = getEvent(eventId);
 
@@ -97,10 +96,10 @@ public class RatingServiceImpl implements RatingService {
 
         Rating rating = getRating(user, event);
 
-        if (rating.getIsLike() == isLike) {
+        if (rating.getIsLike().equals(likeValue)) {
             ratingRepository.delete(rating);
         } else {
-            throw new ConflictException("No " + (isLike ? "like" : "dislike") + " found to remove");
+            throw new ConflictException("No " + (likeValue == 1 ? "like" : "dislike") + " found to remove");
         }
     }
 

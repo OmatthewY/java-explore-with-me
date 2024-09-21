@@ -80,6 +80,6 @@ CREATE TABLE IF NOT EXISTS event_ratings
     created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     user_id BIGINT NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
     event_id BIGINT NOT NULL REFERENCES events (event_id) ON DELETE CASCADE,
-    is_like BOOLEAN NOT NULL,
+    is_like SMALLINT NOT NULL,
     CONSTRAINT unique_user_likes_event UNIQUE (user_id, event_id)
 );

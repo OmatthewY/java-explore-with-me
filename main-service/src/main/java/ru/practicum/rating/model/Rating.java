@@ -44,5 +44,5 @@ public class Rating {
     private Event event;
 
     @Column(name = "is_like", nullable = false)
-    private Boolean isLike;
+    private Integer isLike;
 }
