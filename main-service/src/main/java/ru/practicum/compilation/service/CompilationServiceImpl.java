@@ -18,6 +18,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.rating.repository.RatingRepository;
 import ru.practicum.exeption.NotFoundException;
 import ru.practicum.request.dto.EventCountByRequest;
 import ru.practicum.request.repository.RequestRepository;
@@ -38,6 +39,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final RequestRepository requestRepository;
     private final StatClient statClient;
     private final EventMapper eventMapper;
+    private final RatingRepository ratingRepository;
 
     private final CompilationMapper compilationMapper;
 
@@ -85,9 +87,10 @@ public class CompilationServiceImpl implements CompilationService {
         return eventsIdWithViews.stream().map(ev -> {
             Event finalEvent = eventMap.get(ev.getEventId());
 
+            int rating = getRating(finalEvent);
             long views = viewsMap.getOrDefault("/events/" + ev.getEventId(), 0L);
             finalEvent.setConfirmedRequests(Math.toIntExact(ev.getCount()));
-            return eventMapper.toEventShortDto(finalEvent, views);
+            return eventMapper.toEventShortDto(finalEvent, rating, views);
         }).collect(Collectors.toList());
     }
 
@@ -147,5 +150,11 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() -> new NotFoundException("Подборка с ID = " + compId + " не найдена"));
 
         return compilationMapper.toCompilationDto(compilation, getEventShortDtos(compilation));
+    }
+
+    private int getRating(Event event) {
+        int likes = Optional.of(ratingRepository.countLikesByEvent(event)).orElse(0);
+        int dislikes = Optional.of(ratingRepository.countDislikesByEvent(event)).orElse(0);
+        return likes - dislikes;
     }
 }
